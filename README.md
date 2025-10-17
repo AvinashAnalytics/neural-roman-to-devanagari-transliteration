@@ -15,8 +15,7 @@ A comprehensive, deep learning-based system for Hindi transliteration from Roman
 *A live version of the application can be deployed on Streamlit Community Cloud for easy access.*
 
 **GIF of the Application in Action:**
-*(Placeholder: It is highly recommended to add a GIF showcasing the GUI's features here)*
-![App Demo GIF](https://your-gif-url.com/demo.gif)
+![App Demo GIF](https://s12.gifyu.com/images/b3MrA.gif)
 
 ## 🚀 Key Features
 
@@ -371,3 +370,5 @@ The models are rigorously evaluated using metrics compliant with the ACL W15-390
 > ✨ **Maintained with ❤️ by AvinashAnalytics — Building NLP for Bharat.**  
 > 🇮🇳 *Mera Bharat Mahan — Let language be no barrier.*
 ```
+
+
