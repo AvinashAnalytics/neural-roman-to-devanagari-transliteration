@@ -1,0 +1,67 @@
+{
+  "Training": {
+    "count": 100000,
+    "sources": {
+      "IndicCorp": 74993,
+      "Dakshina": 1969,
+      "Samanantar": 11118,
+      "Wikidata": 1931,
+      "AK-Freq": 853,
+      "Existing": 9136
+    },
+    "unique_src": 96293,
+    "unique_tgt": 97862,
+    "src_len_mean": 9.52039,
+    "src_len_std": 4.477689610491106,
+    "src_len_min": 1,
+    "src_len_max": 32,
+    "src_len_median": 9.0,
+    "tgt_len_mean": 8.71181,
+    "tgt_len_std": 3.4921478382078837,
+    "tgt_len_min": 1,
+    "tgt_len_max": 28,
+    "tgt_len_median": 8.0
+  },
+  "Validation": {
+    "count": 6357,
+    "sources": {
+      "Wikidata": 484,
+      "Samanantar": 1332,
+      "IndicCorp": 2424,
+      "Dakshina": 2117
+    },
+    "unique_src": 6315,
+    "unique_tgt": 4497,
+    "src_len_mean": 7.473651093282995,
+    "src_len_std": 2.5950800050324565,
+    "src_len_min": 2,
+    "src_len_max": 22,
+    "src_len_median": 7.0,
+    "tgt_len_mean": 6.5416076765770015,
+    "tgt_len_std": 2.354070130755839,
+    "tgt_len_min": 1,
+    "tgt_len_max": 20,
+    "tgt_len_median": 6.0
+  },
+  "Test": {
+    "count": 10112,
+    "sources": {
+      "AK-Freq": 3647,
+      "AK-NEF": 826,
+      "AK-NEI": 1188,
+      "Dakshina": 4451
+    },
+    "unique_src": 9991,
+    "unique_tgt": 6424,
+    "src_len_mean": 7.868571993670886,
+    "src_len_std": 2.9405759578630986,
+    "src_len_min": 2,
+    "src_len_max": 26,
+    "src_len_median": 7.0,
+    "tgt_len_mean": 6.871340981012659,
+    "tgt_len_std": 2.6574920702927147,
+    "tgt_len_min": 1,
+    "tgt_len_max": 20,
+    "tgt_len_median": 6.0
+  }
+}

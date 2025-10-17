@@ -1,0 +1,217 @@
+{
+  "results": {
+    "greedy": {
+      "word_accuracy": 0.323691322189971,
+      "char_precision": 0.854021305854775,
+      "char_recall": 0.8413849377069216,
+      "char_f1": 0.8437271272048205,
+      "mean_edit_distance": 1.3539185266740066,
+      "n_samples": 9991
+    },
+    "beam_3": {
+      "word_accuracy": 0.32959663697327596,
+      "char_precision": 0.8531013516542325,
+      "char_recall": 0.8444564546611808,
+      "char_f1": 0.8449183017684513,
+      "mean_edit_distance": 1.3404063657291563,
+      "n_samples": 9991,
+      "mrr": 0.4318386547893104,
+      "top5_accuracy": 0.5608047242518266,
+      "top10_accuracy": 0.5608047242518266
+    },
+    "beam_5": {
+      "word_accuracy": 0.329496546892203,
+      "char_precision": 0.8529059098804295,
+      "char_recall": 0.8442932916639672,
+      "char_f1": 0.8447361291152203,
+      "mean_edit_distance": 1.3433089780802723,
+      "n_samples": 9991,
+      "mrr": 0.4532963000033363,
+      "top5_accuracy": 0.6546892202982685,
+      "top10_accuracy": 0.6546892202982685
+    },
+    "beam_10": {
+      "word_accuracy": 0.329496546892203,
+      "char_precision": 0.8529273196077107,
+      "char_recall": 0.8443267716794308,
+      "char_f1": 0.8447640062418852,
+      "mean_edit_distance": 1.3424081673506156,
+      "n_samples": 9991,
+      "mrr": 0.4654191152990072,
+      "top5_accuracy": 0.6506856170553498,
+      "top10_accuracy": 0.7475728155339806
+    }
+  },
+  "error_analysis": {
+    "conjuncts": {
+      "त्र": 29,
+      "त्त": 22,
+      "द्य": 8,
+      "त्स": 8,
+      "क्ष": 7
+    },
+    "aspirated": {
+      "छ→च": 65,
+      "द→ध": 45,
+      "त→थ": 43,
+      "ध→द": 35,
+      "प→फ": 33
+    },
+    "vowel_matras": {
+      "ा": 1201,
+      "ी": 496,
+      "ं": 398,
+      "ू": 382,
+      "ि": 232
+    },
+    "halant": {
+      "्": 604
+    },
+    "anusvara_chandrabindu": {
+      "ं": 398,
+      "ँ": 39
+    },
+    "common_errors": [
+      {
+        "prediction": "फ्वॉक्स",
+        "reference": "पीएचडब्ल्यूसीएस",
+        "lcs": 3,
+        "edit_distance": 13,
+        "source": "phwcs"
+      },
+      {
+        "prediction": "प्रतिद्वांदियों",
+        "reference": "प्रतिद्वन्दियों",
+        "lcs": 13,
+        "edit_distance": 2,
+        "source": "pratidwandiyon"
+      },
+      {
+        "prediction": "एक्सिसेटेंस",
+        "reference": "एक्सिसटेंस",
+        "lcs": 10,
+        "edit_distance": 1,
+        "source": "eksisatens"
+      },
+      {
+        "prediction": "फिलमनिर्मता",
+        "reference": "फ़िल्मनिर्माता",
+        "lcs": 11,
+        "edit_distance": 3,
+        "source": "filmnirmata"
+      },
+      {
+        "prediction": "अद्रघ",
+        "reference": "अद्र्घ",
+        "lcs": 5,
+        "edit_distance": 1,
+        "source": "adrgh"
+      },
+      {
+        "prediction": "लढेगे",
+        "reference": "लड़ेगे",
+        "lcs": 4,
+        "edit_distance": 2,
+        "source": "ladhege"
+      },
+      {
+        "prediction": "शिवलापुर्वा",
+        "reference": "शिवालापुरवा",
+        "lcs": 10,
+        "edit_distance": 2,
+        "source": "shiwalapurwa"
+      },
+      {
+        "prediction": "छूटिए",
+        "reference": "चूतीए",
+        "lcs": 2,
+        "edit_distance": 3,
+        "source": "chootie"
+      },
+      {
+        "prediction": "कुरसियो",
+        "reference": "कुर्सियॉ",
+        "lcs": 6,
+        "edit_distance": 2,
+        "source": "kursiyo"
+      },
+      {
+        "prediction": "एंसीयार्डबल्युसी",
+        "reference": "एनसीआरडब्ल्यूसी",
+        "lcs": 11,
+        "edit_distance": 6,
+        "source": "enseeaardablyusee"
+      },
+      {
+        "prediction": "शिवालापूर्व",
+        "reference": "शिवालापुरवा",
+        "lcs": 9,
+        "edit_distance": 3,
+        "source": "shivaalapurva"
+      },
+      {
+        "prediction": "दीदबल्युएं",
+        "reference": "डीडब्ल्यूएन",
+        "lcs": 6,
+        "edit_distance": 5,
+        "source": "deedablyuen"
+      },
+      {
+        "prediction": "प्रणसंगली",
+        "reference": "प्राणसंगली",
+        "lcs": 9,
+        "edit_distance": 1,
+        "source": "praansangalee"
+      },
+      {
+        "prediction": "सैनापुर",
+        "reference": "सैनपुर",
+        "lcs": 6,
+        "edit_distance": 1,
+        "source": "sainapur"
+      },
+      {
+        "prediction": "दिमक",
+        "reference": "दिमाक",
+        "lcs": 4,
+        "edit_distance": 1,
+        "source": "dimak"
+      },
+      {
+        "prediction": "ज्यादा",
+        "reference": "ज़्यादा",
+        "lcs": 6,
+        "edit_distance": 1,
+        "source": "jyadaa"
+      },
+      {
+        "prediction": "जदुले",
+        "reference": "जडूले",
+        "lcs": 3,
+        "edit_distance": 2,
+        "source": "jadule"
+      },
+      {
+        "prediction": "विरांगनाओं",
+        "reference": "वीरांगनाओं",
+        "lcs": 9,
+        "edit_distance": 1,
+        "source": "viraangnaaon"
+      },
+      {
+        "prediction": "उढेगी",
+        "reference": "उड़ेगी",
+        "lcs": 4,
+        "edit_distance": 2,
+        "source": "udhegee"
+      },
+      {
+        "prediction": "विश्वास",
+        "reference": "विष्वास",
+        "lcs": 6,
+        "edit_distance": 1,
+        "source": "wishwas"
+      }
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "greedy": {
+    "word_accuracy": 0.113,
+    "char_precision": 0.6314617965367966,
+    "char_recall": 0.7578666666666667,
+    "char_f1": 0.679020188145188,
+    "mean_edit_distance": 2.044,
+    "n_samples": 1000
+  },
+  "beam_3": {
+    "word_accuracy": 0.117,
+    "char_precision": 0.6414563131313132,
+    "char_recall": 0.75495,
+    "char_f1": 0.6849431401931402,
+    "mean_edit_distance": 1.932,
+    "n_samples": 1000
+  },
+  "beam_5": {
+    "word_accuracy": 0.117,
+    "char_precision": 0.6416154401154401,
+    "char_recall": 0.75605,
+    "char_f1": 0.6855529526029526,
+    "mean_edit_distance": 1.939,
+    "n_samples": 1000
+  },
+  "beam_10": {
+    "word_accuracy": 0.117,
+    "char_precision": 0.6418876623376624,
+    "char_recall": 0.75675,
+    "char_f1": 0.6859196192696193,
+    "mean_edit_distance": 1.941,
+    "n_samples": 1000
+  }
+}
