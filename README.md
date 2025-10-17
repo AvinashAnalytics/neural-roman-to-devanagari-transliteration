@@ -343,6 +343,31 @@ The models are rigorously evaluated using metrics compliant with the ACL W15-390
 -   **Mean Reciprocal Rank (MRR):** For beam search, measures the quality of the entire ranked list of predictions.
 -   **Mean Edit Distance (MED):** The average Levenshtein distance between predicted and reference words.
 
+-   
+## 📑 Official Assignment Report
+
+📄 Full CS772 template-compliant report — results, GUI notes, error analysis:
+
+👉 [CS772 Assignment 2 — Official Report](REPORT.md)
+
+
+
+## 📈 Detailed Results & Analysis
+
+📊 Performance charts, linguistic insights, Mermaid graphs:
+
+👉 [Full Results Dashboard](RESULTS.md)
+
+
 ## 🙏 Acknowledgements
--   This project proudly utilizes the **Aksharantar Dataset**, an invaluable resource created by [AI4Bharat](https://ai4bharat.iitd.ac.in/).
--   This work was completed as part of the **CS772: Natural Language Processing** course.
+
+- Dataset: **[Aksharantar](https://ai4bharat.iitd.ac.in/)** by AI4Bharat 🇮🇳
+- Course: **CS772 — Natural Language Processing**
+- Tools: PyTorch, Streamlit, Hugging Face, Weights & Biases, Groq, OpenAI
+
+
+
+
+> ✨ **Maintained with ❤️ by AvinashAnalytics — Building NLP for Bharat.**  
+> 🇮🇳 *Mera Bharat Mahan — Let language be no barrier.*
+```
