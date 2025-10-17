@@ -3,12 +3,9 @@
 CS772 Assignment 2 - मेरा भारत महान
 Features:
 - LSTM and Transformer models with local attention
-- LLM-based transliteration via OpenAI, Anthropic, Google, Groq
+- LLM-based transliteration via OpenAI and HuggingFace
 - UTF-8 config support and robust error handling
 - Interactive Streamlit GUI with dark mode and Indian tricolor theme
-✅ FIXED: Smart model selection (no duplicate categories)
-✅ FIXED: Auto-fetch models for all providers
-✅ FIXED: Refresh button for model lists
 """
 import streamlit as st
 import torch
@@ -129,7 +126,7 @@ st.markdown("""
         100% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
     }
     
-    /* Individual char positions */
+    /* Individual char positions - "म े र ा   भ ा र त   म ह ा न" */
     .char-1 { top: 10%; left: 5%; animation-delay: 0s; }
     .char-2 { top: 15%; left: 12%; animation-delay: 1s; }
     .char-3 { top: 20%; left: 18%; animation-delay: 2s; }
@@ -503,6 +500,7 @@ st.markdown("""
         box-shadow: var(--shadow-md);
     }
     
+    /* Override Streamlit's default white backgrounds */
     .stDataFrame > div {
         background: var(--dark-card) !important;
     }
@@ -660,7 +658,7 @@ class TransliterationApp:
             except Exception as e:
                 st.warning(f"⚠️ Config load error: {e}. Using defaults.")
         
-        # Default configuration
+        # Default configuration matching your config.yaml
         return {
             'data': {
                 'max_seq_length': 50,
@@ -912,84 +910,33 @@ class TransliterationApp:
             elif "LLM" in model_type:
                 provider = model_type.split("(")[1].split(")")[0].lower()
                 
-                # ✅ FIXED: Better model selection UI
+                # Model selection
                 if provider in st.session_state.available_models:
                     model_list = st.session_state.available_models[provider]
                     
-                    if not model_list:
-                        st.warning(f"⚠️ No models available for {provider.title()}")
-                        selected_model = None
-                    else:
-                        # Group by category
-                        categories = {}
-                        for model in model_list:
-                            cat = model.get('category', 'general')
-                            if cat not in categories:
-                                categories[cat] = []
-                            categories[cat].append(model)
-                        
-                        st.markdown("#### 🤖 Model Selection")
-                        
-                        # ✅ FIX: Show categories only if more than one exists
-                        if len(categories) > 1:
-                            selected_category = st.selectbox(
-                                "Category",
-                                list(categories.keys()),
-                                format_func=lambda x: f"📦 {x.upper()}",
-                                help="Filter models by family"
-                            )
-                            available_models_in_cat = categories[selected_category]
-                        else:
-                            # Single category - skip dropdown
-                            selected_category = list(categories.keys())[0]
-                            available_models_in_cat = categories[selected_category]
-                            st.caption(f"📦 Category: **{selected_category.upper()}**")
-                        
-                        # Model dropdown with rich formatting
-                        model_options = {}
-                        for m in available_models_in_cat:
-                            model_id = m['id']
-                            ctx = m.get('context_window', 0)
-                            ctx_str = f"{ctx//1000}K" if ctx >= 1000 else str(ctx)
-                            
-                            # Display name with context window
-                            display_name = f"{model_id}"
-                            if ctx > 0:
-                                display_name += f" ({ctx_str} ctx)"
-                            
-                            model_options[display_name] = model_id
-                        
-                        selected_display = st.selectbox(
-                            "Model",
-                            list(model_options.keys()),
-                            help=f"{len(available_models_in_cat)} models in {selected_category}"
-                        )
-                        
-                        selected_model = model_options[selected_display]
-                        
-                        # Show model details
-                        selected_model_obj = next((m for m in model_list if m['id'] == selected_model), None)
-                        if selected_model_obj:
-                            col_a, col_b = st.columns(2)
-                            with col_a:
-                                if selected_model_obj.get('context_window', 0) > 0:
-                                    st.caption(f"🔢 Context: {selected_model_obj['context_window']:,}")
-                            with col_b:
-                                if selected_model_obj.get('supports_reasoning'):
-                                    st.caption("🧠 Reasoning: ✅")
-                        
-                        st.session_state.selected_models[provider] = selected_model
+                    categories = {}
+                    for model in model_list:
+                        cat = model.get('category', 'general')
+                        if cat not in categories:
+                            categories[cat] = []
+                        categories[cat].append(model)
+                    
+                    st.markdown("#### 🤖 Model Selection")
+                    selected_category = st.selectbox(
+                        "Category",
+                        list(categories.keys()),
+                        help="Select model category"
+                    )
+                    
+                    selected_model = st.selectbox(
+                        "Model",
+                        [m['id'] for m in categories[selected_category]],
+                        help="Specific model"
+                    )
+                    
+                    st.session_state.selected_models[provider] = selected_model
                 else:
-                    # ✅ FIX: Fetch models on-demand if not cached
-                    st.info(f"📥 Fetching {provider.title()} models...")
-                    with st.spinner("Loading models..."):
-                        models = self.llm.get_available_models(provider)
-                        if models:
-                            st.session_state.available_models[provider] = models
-                            st.rerun()  # Refresh to show models
-                        else:
-                            st.error(f"❌ Failed to fetch models for {provider.title()}")
-                            selected_model = None
+                    selected_model = None
                 
                 # Generation parameters
                 st.markdown("#### 🎛️ Parameters")
@@ -997,26 +944,18 @@ class TransliterationApp:
                 
                 with col_temp:
                     temperature = st.slider("Temperature", 0.0, 1.0, 0.3, 0.05,
-                                          help="Lower = more deterministic")
+                                          help="Lower = deterministic")
                 
                 with col_top:
                     top_p = st.slider("Top-p", 0.0, 1.0, 0.95, 0.05,
-                                    help="Nucleus sampling threshold")
+                                    help="Nucleus sampling")
                 
-                # ✅ FIX: Reasoning support (only for compatible models)
+                # Reasoning
                 use_reasoning = False
-                if 'selected_model' in locals() and selected_model:
-                    selected_model_obj = next(
-                        (m for m in st.session_state.available_models.get(provider, []) 
-                         if m['id'] == selected_model), 
-                        None
-                    )
-                    
-                    if selected_model_obj and selected_model_obj.get('supports_reasoning'):
-                        use_reasoning = st.checkbox(
-                            "🧠 Enable Reasoning", 
-                            help="Show step-by-step thought process (slower)"
-                        )
+                if provider == 'groq' and selected_model:
+                    if 'gpt-oss' in selected_model or 'qwen' in selected_model:
+                        use_reasoning = st.checkbox("🧠 Enable Reasoning", 
+                                                   help="Show step-by-step")
         
         with col2:
             st.markdown("### 📝 Input & Output")
@@ -1080,7 +1019,7 @@ class TransliterationApp:
                             'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             'input': input_text,
                             'output': output_text,
-                            'model': model_type + (f" ({selected_model})" if 'selected_model' in locals() else ""),
+                            'model': model_type,
                             'time': elapsed_time
                         })
                     else:
@@ -1164,37 +1103,24 @@ class TransliterationApp:
                 if is_connected:
                     st.success(f"✅ Connected")
                     
-                    # ✅ FIX: Show model count and allow refresh
                     if provider['name'] in st.session_state.available_models:
                         count = len(st.session_state.available_models[provider['name']])
                         st.caption(f"📦 {count} models available")
                     
-                    col_info, col_refresh, col_disconnect = st.columns([2, 1, 1])
-                    
-                    with col_refresh:
-                        if st.button("🔄", key=f"refresh_{provider['name']}", 
-                                   help="Refresh models"):
-                            with st.spinner("Refreshing..."):
-                                models = self.llm.get_available_models(provider['name'])
-                                if models:
-                                    st.session_state.available_models[provider['name']] = models
-                                    st.success(f"✅ {len(models)} models loaded!")
-                                    time.sleep(1)
-                                    st.rerun()
+                    col_info, col_disconnect = st.columns([3, 1])
                     
                     with col_disconnect:
                         if st.button("🔌", key=f"disconnect_{provider['name']}", 
                                    help="Disconnect"):
                             st.session_state.connected_providers.discard(provider['name'])
                             st.session_state.api_keys.pop(provider['name'], None)
-                            st.session_state.available_models.pop(provider['name'], None)
                             st.rerun()
                 else:
                     api_key = st.text_input(
                         f"{provider['title']} API Key",
                         type="password",
                         key=f"api_key_{provider['name']}",
-                        placeholder="sk-..." if provider['name'] == 'openai' else "API Key"
+                        placeholder="sk-..."
                     )
                     
                     if st.button(f"🔗 Connect", key=f"connect_{provider['name']}",
@@ -1207,22 +1133,18 @@ class TransliterationApp:
                                     st.session_state.api_keys[provider['name']] = api_key.strip()
                                     st.session_state.connected_providers.add(provider['name'])
                                     
-                                    # ✅ FIX: Fetch models for ALL providers, not just Groq
-                                    st.info("📥 Fetching available models...")
-                                    models = self.llm.get_available_models(provider['name'])
-                                    if models:
-                                        st.session_state.available_models[provider['name']] = models
-                                        st.success(f"✅ Connected! {len(models)} models loaded")
-                                    else:
-                                        st.warning(f"⚠️ Connected but no models found")
+                                    if provider['name'] == 'groq':
+                                        models = self.llm.get_available_models('groq')
+                                        st.session_state.available_models['groq'] = models
                                     
+                                    st.success(f"✅ Connected to {provider['title']}!")
                                     st.balloons()
                                     time.sleep(1)
                                     st.rerun()
                                 else:
-                                    st.error(f"❌ Connection failed. Check API key.")
+                                    st.error(f"❌ Failed. Check API key.")
                         else:
-                            st.warning("⚠️ Please enter API key")
+                            st.warning("⚠️ Enter API key")
         
         # Test connection
         if st.session_state.connected_providers:
@@ -1245,7 +1167,7 @@ class TransliterationApp:
                 
                 st.markdown("#### Test Results:")
                 for provider, result in results.items():
-                    if "Error" not in result and "ERROR" not in result:
+                    if "Error" not in result and "not configured" not in result:
                         st.success(f"**{provider.title()}:** {result}")
                     else:
                         st.error(f"**{provider.title()}:** {result}")

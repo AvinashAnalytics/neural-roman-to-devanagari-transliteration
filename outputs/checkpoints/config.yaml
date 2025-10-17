@@ -36,10 +36,10 @@ paths:
   logs_dir: "outputs/logs"
   cache_dir: "outputs/cache"
   
-  # FIXED: Raw data file names (as downloaded from Aksharantar)
-  # Aksharantar uses 'val' not 'valid' for validation split
+  # Raw data file names (as downloaded from Aksharantar)
+
   raw_train_file: "hin_train.json"
-  raw_valid_file: "hin_valid.json"      # ← FIXED: Aksharantar uses 'val'
+  raw_valid_file: "hin_valid.json"
   raw_test_file: "hin_test.json"
   
   # Processed data file names (cleaned and normalized)
@@ -341,7 +341,7 @@ llm:
       - mistralai/Mixtral-8x7B-Instruct-v0.1
     google:
       - gemini-pro
-    groq:
+    #groq:
       - llama3-70b-8192
       - mixtral-8x7b-32768
       - gemma-7b-it
