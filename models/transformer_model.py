@@ -569,7 +569,8 @@ class TransformerSeq2Seq(nn.Module):
         beam_size: int = 1,
         temperature: float = 1.0,
         top_p: float = 1.0,
-        src_lengths: Optional[torch.Tensor] = None  # Ignored, for API compatibility
+        src_lengths: Optional[torch.Tensor] = None,  # Ignored, for API compatibility
+        return_scores: bool = False,
     ) -> Union[torch.Tensor, List[List[torch.Tensor]]]:
         """
         Generate translations using greedy or beam search.
@@ -595,7 +596,7 @@ class TransformerSeq2Seq(nn.Module):
             if beam_size == 1:
                 return self._greedy_decode(src, max_length, temperature, top_p)
             else:
-                return self._beam_search(src, max_length, beam_size)
+                return self._beam_search(src, max_length, beam_size, return_scores=return_scores)
     
     def _greedy_decode(
         self, 
@@ -669,7 +670,7 @@ class TransformerSeq2Seq(nn.Module):
         return output
     
     def _beam_search(
-        self, src: torch.Tensor, max_length: int, beam_size: int
+        self, src: torch.Tensor, max_length: int, beam_size: int, return_scores: bool = False
     ) -> List[List[torch.Tensor]]:
         """
         Beam search decoding.
@@ -743,12 +744,15 @@ class TransformerSeq2Seq(nn.Module):
             if all_finished:
                 break
         
-        # Extract beam sequences for each batch item
+        # Extract beam sequences for each batch item (optionally include per-beam scores)
         results = []
         for b in range(batch_size):
-            batch_results = [seq.squeeze(0) for seq, _ in beams[b]]
+            if return_scores:
+                batch_results = [(seq.squeeze(0), float(score)) for seq, score in beams[b]]
+            else:
+                batch_results = [seq.squeeze(0) for seq, _ in beams[b]]
             results.append(batch_results)
-        
+
         return results
     
     def count_parameters(self) -> int:

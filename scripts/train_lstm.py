@@ -615,6 +615,7 @@ class LSTMTrainer:
             logger.info(f"Testing with beam_size={beam_size}...")
             
             predictions = []
+            decoding_records = []
             
             with torch.no_grad():
                 for src_word in tqdm(self.test_sources, desc=f'Beam-{beam_size}', ncols=100):
@@ -628,15 +629,23 @@ class LSTMTrainer:
                             output[0].cpu().tolist(), remove_special=True
                         )
                         predictions.append(pred_text)
+                        decoding_records.append({'source': src_word, 'beams': [{'text': pred_text, 'score': None}]})
                     else:
-                        beam_output = self.model.generate(src_tensor, beam_size=beam_size, src_lengths=src_lengths)
+                        beam_output = self.model.generate(src_tensor, beam_size=beam_size, src_lengths=src_lengths, return_scores=True)
                         beam_preds = []
-                        for beam_seq in beam_output[0]:
-                            pred_text = self.data_manager.tgt_vocab.decode(
-                                beam_seq.cpu().tolist(), remove_special=True
-                            )
-                            beam_preds.append(pred_text)
+                        beams_for_record = []
+                        for beam_entry in beam_output[0]:
+                            if isinstance(beam_entry, tuple) or isinstance(beam_entry, list):
+                                seq_tensor, score = beam_entry
+                                pred_text = self.data_manager.tgt_vocab.decode(seq_tensor.cpu().tolist(), remove_special=True)
+                                beams_for_record.append({'text': pred_text, 'score': score})
+                                beam_preds.append(pred_text)
+                            else:
+                                pred_text = self.data_manager.tgt_vocab.decode(beam_entry.cpu().tolist(), remove_special=True)
+                                beams_for_record.append({'text': pred_text, 'score': None})
+                                beam_preds.append(pred_text)
                         predictions.append(beam_preds)
+                        decoding_records.append({'source': src_word, 'beams': beams_for_record})
             
             beam_search = beam_size > 1
             metrics = self.evaluator.calculate_metrics(
@@ -680,6 +689,7 @@ class LSTMTrainer:
         with open(results_path, 'w', encoding='utf-8') as f:
             json.dump({
                 'results': results,
+                'decoding': decoding_records if len(decoding_records) > 0 else None,
                 'error_analysis': error_analysis
             }, f, indent=2, ensure_ascii=False)
         

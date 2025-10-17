@@ -1,0 +1,124 @@
+{
+  "results": [
+    {
+      "alpha": 0.0,
+      "mean_char_f1": 0.7829680735930736
+    },
+    {
+      "alpha": 0.5,
+      "mean_char_f1": 0.7829680735930736
+    },
+    {
+      "alpha": 1.0,
+      "mean_char_f1": 0.7829680735930736
+    },
+    {
+      "alpha": 1.5,
+      "mean_char_f1": 0.7814799783549783
+    },
+    {
+      "alpha": 2.0,
+      "mean_char_f1": 0.7559117965367965
+    },
+    {
+      "alpha": 2.5,
+      "mean_char_f1": 0.7254825036075037
+    },
+    {
+      "alpha": 3.0,
+      "mean_char_f1": 0.7186643217893218
+    },
+    {
+      "alpha": 3.5,
+      "mean_char_f1": 0.7087617243867244
+    },
+    {
+      "alpha": 4.0,
+      "mean_char_f1": 0.7087617243867244
+    },
+    {
+      "alpha": 4.5,
+      "mean_char_f1": 0.7018694938102833
+    },
+    {
+      "alpha": 5.0,
+      "mean_char_f1": 0.7018694938102833
+    }
+  ],
+  "best_alpha": {
+    "alpha": 0.0,
+    "mean_char_f1": 0.7829680735930736
+  },
+  "preview": [
+    {
+      "source": "phwcs",
+      "ref": "पीएचडब्ल्यूसीएस",
+      "top_text": "फेकोस",
+      "top_score": -6.0,
+      "top_text_escaped": "\\u092b\\u0947\\u0915\\u094b\\u0938"
+    },
+    {
+      "source": "pratidwandiyon",
+      "ref": "प्रतिद्वन्दियों",
+      "top_text": "प्रतिद्वांदियोस",
+      "top_score": -5.5,
+      "top_text_escaped": "\\u092a\\u094d\\u0930\\u0924\\u093f\\u0926\\u094d\\u0935\\u093e\\u0902\\u0926\\u093f\\u092f\\u094b\\u0938"
+    },
+    {
+      "source": "eksisatens",
+      "ref": "एक्सिसटेंस",
+      "top_text": "एक्सीसटेंस",
+      "top_score": -6.2,
+      "top_text_escaped": "\\u090f\\u0915\\u094d\\u0938\\u0940\\u0938\\u091f\\u0947\\u0902\\u0938"
+    },
+    {
+      "source": "filmnirmata",
+      "ref": "फ़िल्मनिर्माता",
+      "top_text": "फिलमनीरमाता",
+      "top_score": -6.0,
+      "top_text_escaped": "\\u092b\\u093f\\u0932\\u092e\\u0928\\u0940\\u0930\\u092e\\u093e\\u0924\\u093e"
+    },
+    {
+      "source": "ladhege",
+      "ref": "लड़ेगे",
+      "top_text": "लढेगो",
+      "top_score": -6.4,
+      "top_text_escaped": "\\u0932\\u0922\\u0947\\u0917\\u094b"
+    },
+    {
+      "source": "shiwalapurwa",
+      "ref": "शिवालापुरवा",
+      "top_text": "शिवालपुरवा",
+      "top_score": -5.9,
+      "top_text_escaped": "\\u0936\\u093f\\u0935\\u093e\\u0932\\u092a\\u0941\\u0930\\u0935\\u093e"
+    },
+    {
+      "source": "chootie",
+      "ref": "चूतीए",
+      "top_text": "चोटीए",
+      "top_score": -6.3,
+      "top_text_escaped": "\\u091a\\u094b\\u091f\\u0940\\u090f"
+    },
+    {
+      "source": "kursiyo",
+      "ref": "कुर्सियॉ",
+      "top_text": "कुरसियों",
+      "top_score": -6.1,
+      "top_text_escaped": "\\u0915\\u0941\\u0930\\u0938\\u093f\\u092f\\u094b\\u0902"
+    },
+    {
+      "source": "enseeaardablyusee",
+      "ref": "एनसीआरडब्ल्यूसी",
+      "top_text": "एन्सियर्डब्लूसी",
+      "top_score": -6.0,
+      "top_text_escaped": "\\u090f\\u0928\\u094d\\u0938\\u093f\\u092f\\u0930\\u094d\\u0921\\u092c\\u094d\\u0932\\u0942\\u0938\\u0940"
+    },
+    {
+      "source": "deedablyuen",
+      "ref": "डीडब्ल्यूएन",
+      "top_text": "दीडब्ल्यूएन",
+      "top_score": -5.8,
+      "top_text_escaped": "\\u0926\\u0940\\u0921\\u092c\\u094d\\u0932\\u094d\\u092f\\u0942\\u090f\\u0928"
+    }
+  ]
+}

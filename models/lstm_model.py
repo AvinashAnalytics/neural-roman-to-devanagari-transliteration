@@ -450,6 +450,7 @@ class Seq2SeqLSTM(nn.Module):
         temperature: float = 1.0,
         top_p: float = 1.0,
         src_lengths: Optional[torch.Tensor] = None,
+        return_scores: bool = False,
     ) -> Union[torch.Tensor, List[List[torch.Tensor]]]:
         """
         Generate translation using greedy or beam search.
@@ -474,7 +475,7 @@ class Seq2SeqLSTM(nn.Module):
             if beam_size == 1:
                 return self._greedy_decode(src, max_length, temperature, top_p, src_lengths)
             else:
-                return self._beam_search(src, max_length, beam_size, src_lengths)
+                return self._beam_search(src, max_length, beam_size, src_lengths, return_scores=return_scores)
     
     def _greedy_decode(
         self, 
@@ -565,7 +566,8 @@ class Seq2SeqLSTM(nn.Module):
         src: torch.Tensor, 
         max_length: int, 
         beam_size: int,
-        src_lengths: Optional[torch.Tensor] = None
+        src_lengths: Optional[torch.Tensor] = None,
+        return_scores: bool = False
     ) -> List[List[torch.Tensor]]:
         """
         Beam search decoding.
@@ -647,12 +649,15 @@ class Seq2SeqLSTM(nn.Module):
             if all_finished:
                 break
         
-        # Extract top sequence from each batch item's beams
+        # Extract top sequence (and optionally scores) from each batch item's beams
         results = []
         for b in range(batch_size):
-            batch_results = [seq.squeeze(0) for seq, _, _ in beams[b]]
+            if return_scores:
+                batch_results = [(seq.squeeze(0), float(score)) for seq, score, _ in beams[b]]
+            else:
+                batch_results = [seq.squeeze(0) for seq, _, _ in beams[b]]
             results.append(batch_results)
-        
+
         return results
     
     def count_parameters(self) -> int:

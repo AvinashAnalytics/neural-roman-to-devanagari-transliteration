@@ -1,0 +1,184 @@
+{
+  "results": {
+    "note": "quick synthetic decoding file for GUI testing",
+    "n_samples": 20
+  },
+  "decoding": [
+    {
+      "source": "phwcs",
+      "ref": "पीएचडब्ल्यूसीएस",
+      "beams": [
+        {"text": "फ्वॉक्स", "score": -2.3},
+        {"text": "फ्वॉक्सा", "score": -3.1},
+        {"text": "फॉक्स", "score": -4.8},
+        {"text": "फ्वॉक्से", "score": -5.4},
+        {"text": "फेकोस", "score": -6.0}
+      ]
+    },
+    {
+      "source": "pratidwandiyon",
+      "ref": "प्रतिद्वन्दियों",
+      "beams": [
+        {"text": "प्रतिद्वांदियों", "score": -1.2},
+        {"text": "प्रतिद्वन्दियों", "score": -1.9},
+        {"text": "प्रतिद्वांदियो", "score": -3.0},
+        {"text": "प्रतिद्वन्दियों", "score": -4.2},
+        {"text": "प्रतिद्वांदियोस", "score": -5.5}
+      ]
+    },
+    {
+      "source": "eksisatens",
+      "ref": "एक्सिसटेंस",
+      "beams": [
+        {"text": "एक्सिसेटेंस", "score": -0.9},
+        {"text": "एक्सिसटेंस", "score": -2.0},
+        {"text": "एक्सिसटेंसो", "score": -3.6},
+        {"text": "एक्सिसेतन्स", "score": -4.1},
+        {"text": "एक्सीसटेंस", "score": -6.2}
+      ]
+    },
+    {
+      "source": "filmnirmata",
+      "ref": "फ़िल्मनिर्माता",
+      "beams": [
+        {"text": "फिलमनिर्मता", "score": -1.5},
+        {"text": "फिल्मनिर्माता", "score": -2.5},
+        {"text": "फिल्मनिर्मता", "score": -3.7},
+        {"text": "फिल्मनिरमाता", "score": -4.8},
+        {"text": "फिलमनीरमाता", "score": -6.0}
+      ]
+    },
+    {
+      "source": "ladhege",
+      "ref": "लड़ेगे",
+      "beams": [
+        {"text": "लढेगे", "score": -2.0},
+        {"text": "लड़ेगे", "score": -2.2},
+        {"text": "लडहेगे", "score": -3.8},
+        {"text": "लढेगेो", "score": -5.1},
+        {"text": "लढेगो", "score": -6.4}
+      ]
+    },
+    {
+      "source": "shiwalapurwa",
+      "ref": "शिवालापुरवा",
+      "beams": [
+        {"text": "शिवलापुर्वा", "score": -1.0},
+        {"text": "शिवालापुरवा", "score": -1.8},
+        {"text": "शिवालापूर्वा", "score": -2.6},
+        {"text": "शिवालापुरो", "score": -4.0},
+        {"text": "शिवालपुरवा", "score": -5.9}
+      ]
+    },
+    {
+      "source": "chootie",
+      "ref": "चूतीए",
+      "beams": [
+        {"text": "छूटिए", "score": -1.9},
+        {"text": "चूटिए", "score": -2.7},
+        {"text": "चूटे", "score": -3.9},
+        {"text": "छूटे", "score": -5.0},
+        {"text": "चोटीए", "score": -6.3}
+      ]
+    },
+    {
+      "source": "kursiyo",
+      "ref": "कुर्सियॉ",
+      "beams": [
+        {"text": "कुरसियो", "score": -2.3},
+        {"text": "कुर्सिया", "score": -3.3},
+        {"text": "कुर्सियॉ", "score": -3.5},
+        {"text": "कुर्सियॉं", "score": -4.9},
+        {"text": "कुरसियों", "score": -6.1}
+      ]
+    },
+    {
+      "source": "enseeaardablyusee",
+      "ref": "एनसीआरडब्ल्यूसी",
+      "beams": [
+        {"text": "एंसीयार्डबल्युसी", "score": -0.7},
+        {"text": "एनसीआरडब्ल्यूसी", "score": -2.4},
+        {"text": "एंसीयार्डबलुसी", "score": -3.2},
+        {"text": "एन्सीयार्डब्ल्यूसी", "score": -4.4},
+        {"text": "एन्सियर्डब्लूसी", "score": -6.0}
+      ]
+    },
+    {
+      "source": "deedablyuen",
+      "ref": "डीडब्ल्यूएन",
+      "beams": [
+        {"text": "दीदबल्युएं", "score": -1.1},
+        {"text": "डीडब्ल्यूएन", "score": -2.5},
+        {"text": "दीडब्लूएन", "score": -3.6},
+        {"text": "दीदब्लुएं", "score": -4.7},
+        {"text": "दीडब्ल्यूएन", "score": -5.8}
+      ]
+    },
+    {
+      "source": "praansangalee",
+      "ref": "प्राणसंगली",
+      "beams": [
+        {"text": "प्रणसंगली", "score": -2.2},
+        {"text": "प्राणसंगली", "score": -2.0},
+        {"text": "प्राणसंगलीया", "score": -3.3},
+        {"text": "प्रणासंगली", "score": -4.4},
+        {"text": "प्राणसांगली", "score": -5.5}
+      ]
+    },
+    {
+      "source": "sainapur",
+      "ref": "सैनपुर",
+      "beams": [
+        {"text": "सैनापुर", "score": -1.4},
+        {"text": "सैनपुर", "score": -1.6},
+        {"text": "सैनापूर", "score": -3.1},
+        {"text": "सैनापुरो", "score": -4.5},
+        {"text": "सैनापुरी", "score": -5.7}
+      ]
+    },
+    {
+      "source": "dimak",
+      "ref": "दिमाक",
+      "beams": [
+        {"text": "दिमक", "score": -2.9},
+        {"text": "दिमाक", "score": -3.0},
+        {"text": "दिमाक्", "score": -3.8},
+        {"text": "दिमको", "score": -5.2},
+        {"text": "दिमाका", "score": -6.6}
+      ]
+    },
+    {
+      "source": "jyadaa",
+      "ref": "ज़्यादा",
+      "beams": [
+        {"text": "ज्यादा", "score": -1.3},
+        {"text": "ज़्यादा", "score": -1.0},
+        {"text": "जादा", "score": -3.2},
+        {"text": "ज़ादा", "score": -4.6},
+        {"text": "ज्यादाा", "score": -5.9}
+      ]
+    },
+    {
+      "source": "jadule",
+      "ref": "जडूले",
+      "beams": [
+        {"text": "जदुले", "score": -2.1},
+        {"text": "जडूले", "score": -2.0},
+        {"text": "जडुले", "score": -3.7},
+        {"text": "जदूले", "score": -4.9},
+        {"text": "जडूलेज", "score": -6.2}
+      ]
+    },
+    {
+      "source": "viraangnaaon",
+      "ref": "वीरांगनाओं",
+      "beams": [
+        {"text": "विरांगनाओं", "score": -1.7},
+        {"text": "वीरांगनाओं", "score": -1.2},
+        {"text": "विरांगनाओ", "score": -3.5},
+        {"text": "विरांगनाओंो", "score": -4.3},
+        {"text": "वीरांगनाओंो", "score": -6.0}
+      ]
+    }
+  ]
+}
