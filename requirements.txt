@@ -1,0 +1,35 @@
+# =================================================================
+# REQUIREMENTS FOR CS772 HINDI TRANSLITERATION PROJECT
+# Includes core training, evaluation, and Streamlit GUI
+# =================================================================
+
+# --- Core Deep Learning ---
+# Pin PyTorch version for reproducibility.
+# Ensure you install the correct version for your CUDA setup.
+# Example for CUDA 12.1: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+torch>=2.1.0
+
+# --- Data Handling & Processing ---
+numpy>=1.23.0                # Fundamental package for numerical operations
+pandas>=1.5.0                # Used in the GUI for displaying data tables
+tqdm>=4.64.0                 # For beautiful progress bars in scripts
+requests>=2.28.0             # For downloading data and making API calls
+
+# --- Configuration & Serialization ---
+PyYAML>=6.0                  # For loading the config.yaml file
+scikit-learn                 # Though not used directly, often a core dependency of other ML libs. Good to have.
+
+# --- LLM Provider Libraries (all optional but recommended) ---
+# Each of these is wrapped in a try-except block, so they are not strictly required.
+# However, to use a provider, its library must be installed.
+openai>=1.3.0                # For OpenAI and compatible APIs (like Groq, DeepInfra)
+anthropic>=0.20.0            # For Claude models
+google-generativeai>=0.4.0   # For Google Gemini models
+groq>=0.5.0                  # Official Groq client library
+
+# --- GUI Framework ---
+streamlit>=1.30.0            # The core web application framework
+plotly>=5.15.0               # For creating interactive charts in the GUI
+
+# --- Optional but Recommended ---
+wandb>=0.15.0                # For experiment tracking (optional, guarded by a flag)
