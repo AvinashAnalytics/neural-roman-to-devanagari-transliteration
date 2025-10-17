@@ -1,0 +1,15 @@
+# Ignore all JSON files in data/raw
+data/raw/*.json
+
+# Keep zipped datasets
+!data/raw/*.zip
+
+# Ignore other common large or generated files
+*.pt
+*.bin
+*.pkl
+*.ckpt
+__pycache__/
+*.pyc
+*.log
+.venv/

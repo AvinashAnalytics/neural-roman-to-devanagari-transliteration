@@ -1,0 +1,487 @@
+# ===============================================================
+# CONFIGURATION FOR HINDI TRANSLITERATION (CS772 Assignment 2)
+# Language: Hindi | Direction: Roman → Devanagari
+# ===============================================================
+
+# ===============================
+# GLOBAL SETTINGS
+# ===============================
+global:
+  # Random seed for reproducibility (NumPy, PyTorch, Python random)
+  seed: 42  # ← Change to any integer for different random initializations
+  
+  # Device selection: 'auto', 'cpu', or 'cuda'
+  device: auto  # ← Automatically uses GPU if available, falls back to CPU
+  
+  # Multiprocessing start method ('fork', 'spawn', 'forkserver')
+  # Windows requires 'spawn'; Linux/Mac can use 'fork' (faster)
+  mp_start_method: spawn  # ← Safe default for all platforms
+  
+  # Experiment name (used for organizing outputs)
+  experiment_name: "hindi_transliteration"  # ← Change per experiment run
+  
+  # Logging verbosity: 'DEBUG', 'INFO', 'WARNING', 'ERROR'
+  log_level: INFO
+
+# ===============================
+# PATH MANAGEMENT
+# ===============================
+paths:
+  # Base directories
+  data_dir: "data"
+  raw_data_dir: "data/raw"
+  processed_data_dir: "data/processed"
+  checkpoint_dir: "outputs/checkpoints"
+  results_dir: "outputs/results"
+  logs_dir: "outputs/logs"
+  cache_dir: "outputs/cache"
+  
+  # FIXED: Raw data file names (as downloaded from Aksharantar)
+  # Aksharantar uses 'val' not 'valid' for validation split
+  raw_train_file: "hin_train.json"
+  raw_valid_file: "hin_valid.json"      # ← FIXED: Aksharantar uses 'val'
+  raw_test_file: "hin_test.json"
+  
+  # Processed data file names (cleaned and normalized)
+  # These are created by download_data.py after preprocessing
+  train_file: "train.json"
+  valid_file: "valid.json"
+  test_file: "test.json"
+  
+  # Vocabulary files (auto-generated during preprocessing)
+  src_vocab_file: "vocab_src.pkl"
+  tgt_vocab_file: "vocab_tgt.pkl"
+
+# ===============================
+# DATA SETTINGS
+# ===============================
+data:
+  # Aksharantar dataset source
+  # Base URL for downloading from HuggingFace
+  data_url: "https://huggingface.co/datasets/ai4bharat/Aksharantar/resolve/main"
+  
+  # Language code (hin = Hindi)
+  language: hin
+  
+  # Maximum sequence length for padding/truncation (character-level)
+  # This is the ACTUAL max length for data processing and model input
+  max_seq_length: 50  # ← Good for most Hindi transliterations (adjust if needed)
+  
+  # Maximum number of training samples (assignment requires ≤100k)
+  max_train_samples: 100000  # ← Use 1000 for quick tests, 100000 for final submission
+  
+  # File encoding (ensure UTF-8 for Hindi Devanagari)
+  file_encoding: "utf-8"
+  
+  # Control debug printing in data loader
+  verbose: false  # ← Set to true for debugging data pipeline
+  
+  # Prevent accidental test set usage during training (CRITICAL for assignment)
+  allow_test_in_training: false  # ← NEVER set to true per assignment rules
+
+# ===============================
+# PREPROCESSING
+# ===============================
+preprocessing:
+  # Minimum character frequency to include in vocabulary
+  min_frequency: 2  # ← Increase to 3-5 if vocab too large, 1 for no filtering
+  
+  # Maximum vocabulary size (0 = unlimited)
+  max_vocab_size_src: 0  # ← Limit source vocab size (0 = no limit)
+  max_vocab_size_tgt: 0  # ← Limit target vocab size (0 = no limit)
+  
+  # Normalization options
+  normalize_unicode: true  # ← NFC normalization for consistent Devanagari representation
+  strip_whitespace: true   # ← Remove leading/trailing whitespace
+  lowercase_roman: false   # ← Keep Roman casing (helps with proper nouns)
+  
+  # Special tokens (must be unique)
+  pad_token: "<PAD>"
+  sos_token: "<SOS>"  # Start of sequence
+  eos_token: "<EOS>"  # End of sequence
+  unk_token: "<UNK>"  # Unknown character
+  
+  # Warning threshold for high UNK rate (percentage)
+  unk_rate_warning_threshold: 5.0  # Warn if >5% unknown chars
+
+# ===============================
+# LSTM SETTINGS (Section 3)
+# ===============================
+lstm:
+  # Architecture
+  embedding_dim: 256       # Character embedding dimension
+  hidden_dim: 512          # LSTM hidden size (per direction)
+  num_layers: 2            # Assignment requires ≤2 layers
+  bidirectional: true      # Use bidirectional encoder (recommended)
+  dropout: 0.3             # Dropout rate (0.1-0.5 range)
+  
+  # Attention mechanism for decoder
+  use_attention: true      # Enable Bahdanau/Luong attention
+  attention_type: "luong"  # 'bahdanau' or 'luong'
+
+# ===============================
+# TRANSFORMER SETTINGS (Section 4)
+# ===============================
+transformer:
+  # Architecture
+  d_model: 256             # Model dimension (embedding size, MUST be divisible by n_heads)
+  n_heads: 8               # Number of attention heads (256/8 = 32 dims per head)
+  num_layers: 2            # Assignment requires ≤2 layers
+  d_ff: 1024               # Feed-forward hidden dimension (typically 4x d_model)
+  dropout: 0.1             # Dropout rate (Transformers use lower than LSTMs)
+  
+  # FIXED: Renamed to avoid confusion with data.max_seq_length
+  # This is the CAPACITY of positional encoding (must be ≥ data.max_seq_length)
+  max_positional_encoding: 100      # Maximum sequence length for positional encoding
+  positional_encoding_type: "sinusoidal"  # 'sinusoidal' or 'learned'
+  
+  # Local attention (ASSIGNMENT REQUIREMENT - replaces standard attention)
+  use_local_attention: true       # Replace standard attention with local
+  local_attention_window: 5       # FIXED: Window radius (total attended positions = 2*window+1 = 11)
+  local_attention_type: "sliding" # 'sliding' window or 'fixed' blocks
+  
+  # Layer normalization placement
+  pre_norm: true  # Pre-LN (more stable) vs Post-LN
+
+# ===============================
+# TRAINING HYPERPARAMETERS
+# ===============================
+training:
+  # Batch settings
+  batch_size: 64           # Reduce to 32 if OOM on 8GB GPU
+  gradient_accumulation_steps: 1  # Simulate larger batch (effective_batch = batch_size * accum_steps)
+  learning_rate: 0.0005
+  # Epochs and early stopping
+  epochs: 10               # Total epochs (increase to 15-20 for final training)
+  early_stopping_patience: 5  # Stop if no improvement for N epochs
+  early_stopping_metric: "val_word_acc"  # Metric to monitor ('val_loss', 'val_word_acc', 'val_char_f1')
+  early_stopping_mode: "max"  # 'max' for accuracy, 'min' for loss
+  
+  # Data loading (platform-dependent)
+  num_workers: 0           # FIXED: Set to 0 on Windows, 2-4 on Linux/Mac (or use 'auto')
+  pin_memory: "auto"       # FIXED: Quoted "auto" - true if CUDA available, false otherwise
+  prefetch_factor: 2       # Prefetch batches (only if num_workers > 0)
+  persistent_workers: false  # Keep workers alive (only if num_workers > 0)
+  
+  # Bucketed batching (groups similar-length sequences for efficiency)
+  bucketed_batching: true  # Highly recommended for variable-length sequences
+  bucket_boundaries: [10, 20, 30, 40, 50]  # Bucket boundaries by sequence length
+  shuffle_within_batch: true  # Shuffle within buckets
+  
+  # Checkpointing strategy
+  save_every_n_epochs: 1   # Save checkpoint every N epochs (0 = only save best)
+  save_best_only: false    # If true, only save when validation metric improves
+  checkpoint_metric: "val_word_acc"  # Metric to track for best model
+  checkpoint_mode: "max"   # 'max' for accuracy, 'min' for loss
+  keep_last_n_checkpoints: 3  # Keep only N most recent checkpoints (0 = keep all)
+  
+  # Checkpoint contents (what to save)
+  checkpoint_save_config:
+    model_state: true      # Model weights
+    optimizer_state: true  # Optimizer state (for resuming training)
+    scheduler_state: true  # LR scheduler state
+    epoch: true            # Current epoch number
+    step: true             # Global step counter
+    best_metric: true      # Best validation metric value
+    config: true           # Copy of config.yaml
+    vocab: true            # Source and target vocabularies
+    rng_state: true        # Random number generator states (reproducibility)
+  
+  # Validation and logging
+  validate_every_n_steps: 0  # Validate every N steps (0 = once per epoch)
+  log_every_n_steps: 100   # Log training metrics every N steps
+  
+  # Advanced training features
+  use_amp: false           # Automatic Mixed Precision (set true for V100/A100/RTX 30/40 series GPUs)
+  torch_compile: true     # torch.compile for 2x speedup (requires PyTorch ≥2.0)
+  
+  # Gradient clipping (prevents exploding gradients)
+  gradient_clip_norm: 1.0       # Clip gradients by global norm (0 to disable)
+  gradient_clip_value: 0.0      # Clip gradients by value (0 to disable)
+  
+  # Regularization
+  label_smoothing: 0.0     # Label smoothing (0.1 can help generalization, 0.0 = disabled)
+  
+  # ================================
+  # MODEL-SPECIFIC TRAINING PARAMS
+  # ================================
+  lstm_specific:
+    # Optimizer
+    optimizer: "adam"
+    learning_rate: 0.005         # LSTMs work well with higher LR
+    weight_decay: 0.0001
+    betas: [0.9, 0.999]
+    epsilon: 1.0e-8
+    
+    # Learning rate scheduling
+    use_lr_scheduler: true
+    scheduler_type: "reduce_on_plateau"  # 'step', 'cosine', 'reduce_on_plateau'
+    lr_decay_factor: 0.5
+    lr_decay_patience: 3
+    lr_decay_steps: 5            # For 'step' scheduler
+    min_lr: 1.0e-6
+    
+    # Teacher forcing (curriculum learning for autoregressive decoding)
+    teacher_forcing_ratio: 0.5   # Initial ratio (0.0 = always use model output, 1.0 = always use ground truth)
+    teacher_forcing_decay: 0.99  # Multiplicative decay per epoch
+    teacher_forcing_min: 0.1     # Minimum ratio (don't go to 0 to avoid training instability)
+  
+  transformer_specific:
+    # Optimizer
+    optimizer: "adam"
+    learning_rate: 0.0005        # Transformers need moderate LR with warmup
+    weight_decay: 0.0001
+    betas: [0.9, 0.98]           # Transformer-specific (β2=0.98 common in literature)
+    epsilon: 1.0e-9              # Smaller epsilon for numerical stability
+    
+    # Learning rate scheduling (warmup CRITICAL for Transformers)
+    use_lr_scheduler: true
+    scheduler_type: "cosine_with_warmup"  # Recommended for Transformers
+    warmup_steps: 4000           # Gradual warmup prevents early divergence
+    min_lr: 1.0e-6
+    
+    # Teacher forcing (Transformers often use 100% throughout training)
+    teacher_forcing_ratio: 1.0   # Keep at 100% for Transformers
+    teacher_forcing_decay: 1.0   # No decay
+    teacher_forcing_min: 1.0     # Keep at 100%
+
+# ===============================
+# EVALUATION SETTINGS
+# ===============================
+evaluation:
+  # FIXED: Only metrics actually implemented in evaluation.py
+  # ACL W15-3902 compliant metrics
+  metrics:
+    - "word_accuracy"      # Exact word-level match (primary metric)
+    - "char_f1"            # Character-level F1 score (LCS-based, primary metric)
+    - "char_precision"     # Character-level precision
+    - "char_recall"        # Character-level recall
+    - "edit_distance"      # Levenshtein distance (average)
+  
+  # Beam search configurations for comparison
+  beam_sizes:
+    - 1   # Greedy decoding (baseline)
+    - 3   # Small beam
+    - 5   # Medium beam (recommended default)
+    - 10  # Large beam
+  
+  default_beam_size: 5     # Default beam size for inference
+  beam_alpha: 0.0          # Length normalization factor (0.6-0.7 typical, 0.0=disabled)
+  
+  # Output generation
+  save_predictions: true   # Save predictions to file for analysis
+  save_attention_weights: false  # Save attention weights (WARNING: large files, slow)
+  num_examples_to_print: 10  # Print N examples during evaluation
+  
+  # Error analysis (assignment requirement)
+  save_error_analysis: true  # Save incorrectly predicted examples
+  group_errors_by_pattern: true  # Group errors by Hindi character patterns
+
+# ===============================
+# INFERENCE SETTINGS
+# ===============================
+inference:
+  # Whether to load optimizer/scheduler states (not needed for inference)
+  load_optimizer: false
+  load_scheduler: false
+  
+  # Batch size for inference (can be larger than training)
+  batch_size: 128
+  
+  # Default decoding strategy
+  decoding_strategy: "beam_search"  # 'greedy' or 'beam_search'
+  beam_size: 5
+  
+  # Maximum output length (as multiple of input length)
+  max_length_factor: 2.0   # Output can be up to 2x input length
+  min_length: 1            # Minimum output length
+
+# ===============================
+# LLM SETTINGS (Section 5)
+# ===============================
+llm:
+  # Default model selection
+  default_provider: "groq"           # Choose from: openai, anthropic, google, groq, deepinfra
+  default_model: "mixtral-8x7b-32768"  # Default model within provider
+  
+  # Generation settings
+  max_tokens: 100          # Maximum tokens to generate
+  timeout: 30              # API timeout in seconds
+  max_retries: 3           # Retry failed API calls
+  retry_delay: 1.0         # Delay between retries (seconds)
+  
+  # Rate limiting
+  requests_per_minute: 60  # Max requests per minute (adjust per API tier)
+  batch_delay: 1.0         # Delay between batch requests (seconds)
+  
+  # Prompt engineering
+  system_prompt: |
+    You are a Hindi transliteration expert. Convert the given Roman script to Devanagari script.
+    Provide ONLY the Devanagari transliteration, no explanations or additional text.
+  
+  user_prompt_template: "Transliterate to Devanagari: {roman_text}"
+  
+  # Few-shot examples (optional, can improve accuracy)
+  use_few_shot: false
+  few_shot_examples:
+    - roman: "namaste"
+      devanagari: "नमस्ते"
+    - roman: "bharat"
+      devanagari: "भारत"
+    - roman: "hindi"
+      devanagari: "हिंदी"
+  
+  # Available models by provider
+  models:
+    anthropic:
+      - claude-3-haiku-20240307
+      - claude-3-sonnet-20240229
+    deepinfra:
+      - meta-llama/Llama-2-70b-chat-hf
+      - mistralai/Mixtral-8x7B-Instruct-v0.1
+    google:
+      - gemini-pro
+    groq:
+      - llama3-70b-8192
+      - mixtral-8x7b-32768
+      - gemma-7b-it
+    openai:
+      - gpt-3.5-turbo
+      - gpt-4-turbo
+  
+  # Sampling parameters for experimentation (ASSIGNMENT REQUIREMENT)
+  temperature_values:
+    - 0.0  # Deterministic (greedy)
+    - 0.1  # Very low randomness (recommended for transliteration)
+    - 0.3
+    - 0.5
+    - 0.7
+    - 0.9
+    - 1.0  # Maximum randomness
+  
+  top_p_values:
+    - 0.9   # Nucleus sampling with 90% probability mass
+    - 0.95
+    - 0.99
+    - 1.0   # No nucleus filtering
+  
+  # Default values for GUI
+  default_temperature: 0.1
+  default_top_p: 0.95
+  
+  # API key management (CRITICAL: set via environment variables, NEVER hardcode)
+  api_key_env_vars:
+    openai: "OPENAI_API_KEY"
+    anthropic: "ANTHROPIC_API_KEY"
+    google: "GOOGLE_API_KEY"
+    groq: "GROQ_API_KEY"
+    deepinfra: "DEEPINFRA_API_KEY"
+
+# ===============================
+# GUI SETTINGS (Streamlit)
+# ===============================
+gui:
+  # App configuration
+  title: "Hindi Transliteration: Roman → Devanagari"
+  page_icon: "🔤"
+  layout: "wide"
+  initial_sidebar_state: "expanded"
+  
+  # Default model to load on startup
+  default_model_type: "transformer"  # 'lstm', 'transformer', or 'llm'
+  
+  # Model checkpoint paths (relative to checkpoint_dir)
+  lstm_checkpoint: "lstm_best.pt"
+  transformer_checkpoint: "transformer_best.pt"
+  
+  # LLM defaults for GUI
+  default_llm_provider: "groq"
+  default_llm_model: "mixtral-8x7b-32768"
+  default_llm_temperature: 0.1
+  default_llm_top_p: 0.95
+  
+  # UI features
+  show_attention_visualization: true
+  show_beam_search_options: true
+  enable_batch_upload: true
+  max_batch_size: 100
+  
+  # Performance
+  cache_models: true       # Cache loaded models in session state
+  lazy_load: true          # Load models only when selected
+
+# ===============================
+# DEBUGGING & PROFILING
+# ===============================
+debug:
+  # Enable debug mode (verbose logging, smaller batches)
+  enabled: false
+  
+  # Limit batches for quick testing
+  max_train_batches: 0     # Process only N batches per epoch (0 = all)
+  max_val_batches: 0       # Process only N validation batches (0 = all)
+  
+  # Detect anomalies (NaN/Inf in gradients, slower)
+  detect_anomaly: false    # Enable torch.autograd.detect_anomaly()
+  
+  # Profile performance
+  profile: false           # Enable PyTorch profiler
+  profile_wait: 1
+  profile_warmup: 1
+  profile_active: 3
+  profile_repeat: 1
+  profile_output: "outputs/profile.json"
+  
+  # Sanity checks
+  check_data_loading: false  # Print sample batches
+  check_model_output_shapes: false  # Validate tensor shapes
+  check_gradient_flow: false  # Check which parameters receive gradients
+
+# ===============================================================
+# QUICK START CONFIGURATIONS
+# ===============================================================
+# 
+# 1. FAST TESTING (5-10 min on CPU):
+#    data:
+#      max_train_samples: 1000
+#    training:
+#      epochs: 2
+#      batch_size: 32
+#    debug:
+#      enabled: true
+#      max_train_batches: 10
+#      max_val_batches: 5
+# 
+# 2. MEDIUM TRAINING (1-2 hours on GPU):
+#    data:
+#      max_train_samples: 10000
+#    training:
+#      epochs: 10
+#      batch_size: 64
+# 
+# 3. FINAL SUBMISSION (4-8 hours on GPU):
+#    data:
+#      max_train_samples: 100000
+#    training:
+#      epochs: 15
+#      batch_size: 128  # if GPU memory allows
+#      use_amp: true    # if modern GPU (V100/A100/RTX 30/40 series)
+#    transformer_specific:
+#      warmup_steps: 8000  # More warmup for larger dataset
+# 
+# ===============================================================
+# ENVIRONMENT SETUP
+# ===============================================================
+# 
+# Required environment variables (for LLM experiments):
+#   export GROQ_API_KEY="your_groq_key_here"
+#   # OR
+#   export OPENAI_API_KEY="your_openai_key_here"
+#   # (choose provider and set corresponding key)
+# 
+# Verify config (run from project root):
+#   python -c "import yaml; print('Config valid!' if yaml.safe_load(open('config/config.yaml')) else 'Invalid')"
+# 
+# ===============================================================
+# END OF CONFIG
+# ===============================================================
