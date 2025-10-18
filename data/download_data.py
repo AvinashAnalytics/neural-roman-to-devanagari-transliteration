@@ -25,6 +25,8 @@ from pathlib import Path
 import numpy as np
 from tqdm import tqdm
 import yaml
+import hashlib
+import sys
 
 
 class DataDownloader:
@@ -36,6 +38,14 @@ class DataDownloader:
     
     def __init__(self, config_path: str = "config/config.yaml"):
         """Initialize data downloader with configuration"""
+        # Try to ensure stdout/stderr use UTF-8 to avoid UnicodeEncodeError on Windows consoles
+        try:
+            if sys.stdout.encoding is None or sys.stdout.encoding.lower() != 'utf-8':
+                import io
+                sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+        except Exception:
+            # If re-wrapping stdout fails, continue without raising — prints may still error on some consoles
+            pass
         # Resolve config path relative to project root
         config_path = Path(config_path)
         if not config_path.exists():
@@ -172,10 +182,22 @@ class DataDownloader:
                 # List contents
                 file_list = zip_ref.namelist()
                 print(f"📋 Found {len(file_list)} files in archive")
-                
-                # Extract all
-                zip_ref.extractall(self.raw_dir)
-                
+                # Safe extraction to avoid zip-slip vulnerabilities
+                raw_resolved = self.raw_dir.resolve()
+                for member in zip_ref.infolist():
+                    member_name = member.filename
+                    # Skip directory entries
+                    if member_name.endswith('/'):
+                        continue
+                    target_path = (self.raw_dir / member_name).resolve()
+                    if not str(target_path).startswith(str(raw_resolved)):
+                        raise RuntimeError(f"Unsafe path in zip file: {member_name}")
+                    # Ensure parent directory exists
+                    target_path.parent.mkdir(parents=True, exist_ok=True)
+                    # Extract member safely
+                    with zip_ref.open(member) as source, open(target_path, 'wb') as target:
+                        shutil.copyfileobj(source, target)
+
                 # Show extracted JSON files
                 for file in file_list:
                     if file.endswith('.json'):
@@ -249,12 +271,18 @@ class DataDownloader:
         if not self.validate_transliteration_pair(src_roman, tgt_devanagari):
             return None
         
+        # Provide a stable fallback unique_id when the source data lacks one
+        uid = item.get('unique_identifier')
+        if not uid:
+            # Hash of source + separator + target (stable and deterministic)
+            uid = hashlib.sha1(f"{src_roman}||{tgt_devanagari}".encode('utf-8')).hexdigest()
+
         return {
             'english word': src_roman,
             'native word': tgt_devanagari,
             'src_len': len(src_roman),
             'tgt_len': len(tgt_devanagari),
-            'unique_id': item.get('unique_identifier', ''),
+            'unique_id': uid,
             'source_dataset': item.get('source', 'unknown'),
             'score': item.get('score')
         }
@@ -270,31 +298,57 @@ class DataDownloader:
             raise FileNotFoundError(f"❌ File not found: {filepath}")
         
         print(f"📖 Loading: {filepath.name}")
-        
-        # Stream file line-by-line (memory efficient)
+
+        # Detect whether file is JSON array (single list) or JSONL (one object per line)
         with open(filepath, 'r', encoding=self.file_encoding) as f:
-            for line_num, line in enumerate(tqdm(f, desc="Reading lines"), 1):
-                line = line.strip()
-                if not line:
-                    continue
-                
+            # Peek first non-whitespace character
+            first_chunk = f.read(4096)
+            first_char = ''
+            for ch in first_chunk:
+                if not ch.isspace():
+                    first_char = ch
+                    break
+            f.seek(0)
+
+            if first_char == '[':
+                # JSON array
                 try:
-                    item = json.loads(line)
-                    processed_item = self.process_data_item(item)
-                    
-                    if processed_item:
-                        data.append(processed_item)
-                    else:
-                        skipped += 1
-                        
+                    items = json.load(f)
                 except json.JSONDecodeError as e:
-                    if self.verbose:
-                        print(f"   ⚠️  Line {line_num}: Invalid JSON - {e}")
-                    skipped += 1
-                except Exception as e:
-                    if self.verbose:
-                        print(f"   ⚠️  Line {line_num}: Error - {e}")
-                    skipped += 1
+                    raise
+                for idx, item in enumerate(tqdm(items, desc='Reading array items')):
+                    try:
+                        processed_item = self.process_data_item(item)
+                        if processed_item:
+                            data.append(processed_item)
+                        else:
+                            skipped += 1
+                    except Exception:
+                        skipped += 1
+            else:
+                # JSONL streaming
+                for line_num, line in enumerate(tqdm(f, desc="Reading lines"), 1):
+                    line = line.strip()
+                    if not line:
+                        continue
+
+                    try:
+                        item = json.loads(line)
+                        processed_item = self.process_data_item(item)
+
+                        if processed_item:
+                            data.append(processed_item)
+                        else:
+                            skipped += 1
+
+                    except json.JSONDecodeError as e:
+                        if self.verbose:
+                            print(f"   ⚠️  Line {line_num}: Invalid JSON - {e}")
+                        skipped += 1
+                    except Exception as e:
+                        if self.verbose:
+                            print(f"   ⚠️  Line {line_num}: Error - {e}")
+                        skipped += 1
         
         print(f"   ✅ Loaded: {len(data):,} valid pairs")
         if skipped > 0:

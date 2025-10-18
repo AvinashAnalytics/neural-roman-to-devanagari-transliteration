@@ -406,6 +406,31 @@ The models are rigorously evaluated using metrics compliant with the ACL W15-390
 
 👉 [Full Results Dashboard](RESULTS.md)
 
+## 🧰 Tools
+
+This project includes a small utility to help tune beam reranking length-normalization (alpha) called `run_alpha_sweep.py`.
+
+Purpose
+- Runs a length-normalization alpha sweep over per-sample decoding outputs (requires `decoding` entries with per-beam `score` values).
+- Produces a JSON and CSV summarizing alpha vs mean character-F1 and can optionally write a reranked top-1 results JSON.
+
+Where to find it
+- `scripts/run_alpha_sweep.py`
+
+Basic usage
+```bash
+python scripts/run_alpha_sweep.py -i outputs/results/quick_decoding_test.json --alpha-min 0.0 --alpha-max 3.0 --alpha-step 0.5 --out-dir outputs/results --preview-size 10 --rerank-output
+```
+
+Outputs (example files created during development)
+- `outputs/results/alpha_sweep_quick_decoding_test.json` — JSON summary with fields `results` (list of {alpha, mean_char_f1}) and `preview` (sample reranked outputs).
+- `outputs/results/alpha_sweep_quick_decoding_test.csv` — CSV table with columns `alpha,mean_char_f1` for plotting or archiving.
+- `outputs/results/quick_decoding_test_reranked_top1.json` — (optional) a reranked results JSON containing per-sample `top1_reranked` entries when `--rerank-output` is used.
+
+Notes
+- The utility is lightweight and dependency-free (uses only Python standard library + json/csv). It expects numeric per-beam `score` values to perform meaningful reranking.
+- Use this tool to find an empirical alpha to feed into the GUI or to generate reranked test outputs for analysis.
+
 
 ## 🙏 Acknowledgements
 
