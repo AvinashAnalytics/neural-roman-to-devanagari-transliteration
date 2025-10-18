@@ -316,6 +316,55 @@ streamlit run gui/app.py
 ```
 Navigate to the local URL provided in your terminal (usually `http://localhost:8501`) to access the application.
 
+### ⚠️ Before opening the GUI — quick checklist
+Follow these minimal steps to ensure the app loads models and results correctly. Pick the items that apply to your workflow.
+
+- 1) Install dependencies (if not already done):
+
+```bash
+pip install -r requirements.txt
+```
+
+- 2) Prepare or verify processed data:
+    - If you haven't prepared data yet, run the downloader (creates `data/processed/*.json`):
+
+```bash
+python data/download_data.py        # or add --force to reprocess
+```
+
+    - If you already have processed files or want to skip heavy processing, you can use the included small test decoding file used for GUI demos:
+
+        `outputs/results/quick_decoding_test.json`
+
+- 3) Generate model test results (needed for full Results / Oracle analysis in the GUI):
+    - If you have trained models and want up-to-date `decoding` JSONs, run the trainer in test-only mode (PowerShell examples):
+
+```powershell
+python scripts/train_transformer.py --config config/config.yaml --test-only
+# or
+python scripts/train_lstm.py --config config/config.yaml --test-only
+```
+
+    This writes `outputs/results/*_test_results.json` (including per-sample `decoding` with per-beam scores) which the GUI will detect and use for the alpha-sweep / reranking features.
+
+- 4) On Windows, ensure UTF-8 output to avoid UnicodeEncodeError when the app prints Devanagari or emoji (optional but recommended):
+
+```powershell
+#$env:PYTHONIOENCODING = 'utf-8'
+# then launch Streamlit
+streamlit run gui/app.py
+```
+
+- 5) Launch the GUI:
+
+```bash
+streamlit run gui/app.py
+```
+
+Notes:
+- If you only want to demo the GUI quickly, open the app and pick `quick_decoding_test.json` from `outputs/results` in the Results tab — no training required.
+- PPTX export requires `python-pptx` (optional). The GUI disables PPTX features gracefully if the package isn't installed.
+
 ## 🔬 In-Depth: Model Architectures
 
 #### 🧠 LSTM with Attention
